@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.bus.dao.LeavebillMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.bdqn.bus.entity.Leavebill">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="days" property="days" />
+        <result column="leavetime" property="leavetime" />
+        <result column="createtime" property="createtime" />
+        <result column="userid" property="userid" />
+        <result column="state" property="state" />
+        <result column="checkPerson" property="checkPerson" />
+        <result column="committime" property="committime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, title, content, days, leavetime, createtime, userid, state, checkPerson, committime
+    </sql>
+    <select id="findLeaveBillListByPage" resultType="com.bdqn.bus.entity.Leavebill">
+        select l.*,u.name username,m.name mgrname from bus_leavebill l
+        inner join sys_user u on u.id=l.`userid`
+        inner join sys_user m on m.id=u.`mgr`
+        <where>
+            <if test="leavebill.title!=null and leavebill.title!=''">
+                and l.title like concat('%',#{leavebill.title},'%')
+            </if>
+            <if test="leavebill.state!=null">
+                and l.state=#{leavebill.state}
+            </if>
+            <if test="leavebill.startTime!=null">
+                and l.createtime &gt; #{leavebill.startTime}
+            </if>
+            <if test="leavebill.endTime!=null">
+                and l.createtime &lt; #{leavebill.endTime}
+            </if>
+            <if test="leavebill.userid!=null">
+                and l.userid=#{leavebill.userid}
+            </if>
+            <if test="leavebill.checkPerson!=null">
+                and l.checkPerson=#{leavebill.checkPerson}
+            </if>
+        </where>
+        order by l.createtime desc
+    </select>
+
+</mapper>
